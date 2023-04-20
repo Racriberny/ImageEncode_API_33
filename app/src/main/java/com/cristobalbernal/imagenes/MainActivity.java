@@ -10,30 +10,46 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<PickVisualMediaRequest> pickImage;
 
     private ImageView img;
+    private ListView listView;
+    private TextView cantidad;
+    private List<String> base = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Button btN = findViewById(R.id.btn);
+        cantidad = findViewById(R.id.cantidad);
+        listView = findViewById(R.id.list);
         img = findViewById(R.id.imageView);
-
         pickImage = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
             if (uri != null) {
                 try {
                     String base64 = getBase64FromUri(uri);
+                    cantidad.setText(String.valueOf(base64.length()));
+                    for (int i = 0; i <base64.length() ; i++) {
+                        base.add(base64);
+                    }
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,base);
+                    listView.setAdapter(adapter);
                     img.setImageBitmap(EncodingImg.decode(base64));
                 } catch (IOException e) {
                     e.printStackTrace();
